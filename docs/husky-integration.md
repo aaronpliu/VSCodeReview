@@ -55,6 +55,9 @@ npx @jc-vendor/code-review install-hook --template performance
 
 # Use comprehensive template
 npx @jc-vendor/code-review install-hook --template comprehensive
+
+# Include ticket ID and additional information
+npx @jc-vendor/code-review install-hook --template security --ticket-id "PROJ-123" --additional-info "Fixes authentication vulnerability"
 ```
 
 ## How It Works
@@ -86,6 +89,21 @@ The code review tool supports the following file types (and more, see `languages
 - C++ (`.cpp`, `.cxx`, .cc`, `.c++`, `.hpp`, `.hxx`, `.hh`, `.h++`)
 - Ruby (`.rb`, `.rbw`)
 - PHP (`.php`, `.php3`, `.php4`, `.php5`, `.phtml`)
+- Dart (`.dart`)
+- Scala (`.scala`, `.sc`)
+- Lua (`.lua`)
+- Perl (`.pl`, `.pm`, `.pod`, `.t`, `.plx`)
+- Haskell (`.hs`, `.lhs`)
+- Elixir (`.ex`, .exs`)
+- Erlang (`.erl`, `.hrl`)
+- Clojure (`.clj`, `.cljs`, `.cljc`, `.edn`)
+- OCaml (`.ml`, `.mli`)
+- Crystal (`.cr`)
+- Nim (`.nim`)
+- Zig (`.zig`)
+- Solidity (`.sol`)
+- Dockerfile (`.dockerfile`, `Dockerfile`)
+- SQL (`.sql`)
 - And many more...
 
 ## Configuration Options
@@ -110,6 +128,17 @@ You can provide additional context for the review:
 npx @jc-vendor/code-review install-hook --template security --ticket-id "PROJ-123" --additional-info "Fixes security vulnerability"
 ```
 
+The package can also automatically extract context from Git metadata:
+
+- **Ticket IDs**: Extracted from commit messages (e.g., `#123`, `PROJ-123`)
+- **Branch Context**: Extracted from branch names (e.g., `feature/PROJ-123-fix-authentication`)
+- **Commit Message**: Full commit message is included as additional context
+
+To disable automatic extraction, set the environment variable:
+```bash
+export AUTO_EXTRACT_TICKET_ID=false
+```
+
 ### API Configuration
 
 The tool uses the following defaults:
@@ -122,6 +151,21 @@ You can customize these by using the `--host` and `--endpoint` options:
 npx @jc-vendor/code-review install-hook --host http://your-rag-api.com --endpoint /api/v1/query --template security
 ```
 
+## Running Pre-commit Reviews Manually
+
+You can also run the pre-commit review manually without committing:
+
+```bash
+# Run with default security template
+npx @jc-vendor/code-review pre-commit
+
+# Run with specific template
+npx @jc-vendor/code-review pre-commit --template comprehensive
+
+# Run with ticket ID and additional info
+npx @jc-vendor/code-review pre-commit --template security --ticket-id "PROJ-123" --additional-info "Focus on auth module"
+```
+
 ## Troubleshooting
 
 If the pre-commit hook doesn't seem to be working:
@@ -132,3 +176,4 @@ If the pre-commit hook doesn't seem to be working:
 4. Check that your RAG API is running and accessible at the configured endpoint
 5. Run `npx @jc-vendor/code-review list-templates` to verify available templates
 6. Check that the staged files have extensions supported by the package
+7. Ensure your Git commit message doesn't contain special characters that might interfere with context extraction

@@ -4,7 +4,6 @@ import { Command } from 'commander';
 import { Reviewer } from './reviewer';
 import { ApiClient } from './api-client';
 import { HuskyIntegration } from './husky-integration';
-import path from 'path';
 
 const program = new Command();
 
