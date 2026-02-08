@@ -6,9 +6,18 @@ import { ApiClient } from './api-client';
 
 export class HuskyIntegration {
   private template: string;
+  private ticketId?: string;
+  private additionalInfo?: string;
 
-  constructor(private apiClient: ApiClient, template: string = 'security') {
+  constructor(
+    private apiClient: ApiClient, 
+    template: string = 'security',
+    ticketId?: string,
+    additionalInfo?: string
+  ) {
     this.template = template;
+    this.ticketId = ticketId;
+    this.additionalInfo = additionalInfo;
   }
 
   /**
@@ -26,7 +35,7 @@ export class HuskyIntegration {
 
       console.log(`Found ${stagedFiles.length} staged files to review.`);
       
-      const reviewer = new Reviewer(this.apiClient, this.template);
+      const reviewer = new Reviewer(this.apiClient, this.template, this.ticketId, this.additionalInfo);
       const results = await reviewer.reviewFiles(stagedFiles);
       
       // Print results
@@ -104,7 +113,21 @@ export class HuskyIntegration {
     }
     
     // Create the code review command with template option
-    const codeReviewCommand = `npx @jc-vendor/code-review pre-commit --template ${this.template}\n`;
+    let codeReviewCommand = `npx @jc-vendor/code-review pre-commit --template ${this.template}`;
+    
+    // Add ticket ID if provided
+    if (this.ticketId) {
+      codeReviewCommand += ` --ticket-id ${this.ticketId}`;
+    }
+    
+    // Add additional info if provided
+    if (this.additionalInfo) {
+      // Escape the additional info for shell
+      const escapedInfo = this.additionalInfo.replace(/'/g, "'\\''");
+      codeReviewCommand += ` --additional-info '${escapedInfo}'`;
+    }
+    
+    codeReviewCommand += '\n';
     
     // Check if the command is already in the hook to prevent duplicates
     if (existingHookContent.includes(codeReviewCommand.trim())) {

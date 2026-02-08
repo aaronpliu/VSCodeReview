@@ -24,9 +24,18 @@ export class Reviewer {
   private readonly supportedExtensions: Map<string, string> = new Map(); // extension -> language
   private readonly ignorePatterns: string[];
   private readonly template: string;
+  private readonly ticketId?: string;
+  private readonly additionalInfo?: string;
 
-  constructor(private apiClient: ApiClient, template: string = 'security') {
+  constructor(
+    private apiClient: ApiClient, 
+    template: string = 'security',
+    ticketId?: string,
+    additionalInfo?: string
+  ) {
     this.template = template;
+    this.ticketId = ticketId;
+    this.additionalInfo = additionalInfo;
     this.loadLanguageConfiguration();
     this.ignorePatterns = this.loadIgnorePatterns();
   }
@@ -184,7 +193,9 @@ export class Reviewer {
         content,
         language,
         path.basename(filePath),
-        this.template
+        this.template,
+        this.ticketId,
+        this.additionalInfo
       );
 
       return {

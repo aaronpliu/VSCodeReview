@@ -63,7 +63,9 @@ export class ApiClient {
     content: string, 
     language: string, 
     fileName: string,
-    templateName?: string
+    templateName?: string,
+    ticketId?: string,
+    additionalInfo?: string
   ): Promise<ReviewResponse> {
     try {
       // Select the appropriate template
@@ -75,7 +77,17 @@ export class ApiClient {
       }
 
       // Construct the query based on the selected template
-      const query = `${template.prompt}\n\nLanguage: ${language}\nFile: ${fileName}\n\nCode:\n${content}`;
+      let query = `${template.prompt}\n\nLanguage: ${language}\nFile: ${fileName}\nCode:\n${content}`;
+      
+      // Add ticket ID if provided
+      if (ticketId) {
+        query += `\nTicket ID: ${ticketId}`;
+      }
+      
+      // Add additional info if provided
+      if (additionalInfo) {
+        query += `\nAdditional Context: ${additionalInfo}`;
+      }
       
       const requestData: ReviewRequest = {
         query,
@@ -84,7 +96,9 @@ export class ApiClient {
           "additionalProp1": {
             "fileName": fileName,
             "language": language,
-            "template": templateKey
+            "template": templateKey,
+            ...(ticketId && { ticketId }),
+            ...(additionalInfo && { additionalInfo })
           }
         }]
       };

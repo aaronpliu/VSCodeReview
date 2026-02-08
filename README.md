@@ -120,6 +120,66 @@ The package connects to your RAG API with the following defaults:
 
 These can be customized via CLI flags or environment variables.
 
+## Optimized Local Development Workflow
+
+The package is optimized for local development with minimal human intervention:
+
+### 1. One-time Setup
+```bash
+# Install husky and the code review package
+npm install --save-dev husky @jc-vendor/code-review
+
+# Enable husky
+npx husky install
+
+# Install the pre-commit hook with default security template
+npx @jc-vendor/code-review install-hook --template security
+```
+
+### 2. Daily Development Flow
+```bash
+# Developer makes changes
+# Edit files...
+
+# Stage changes
+git add .
+
+# Commit (triggers pre-commit hook automatically)
+git commit -m "Fix user login issue #123"
+# <-- At this point, code review happens automatically!
+
+# Push changes
+git push origin main
+```
+
+## Workflow Diagram
+
+```mermaid
+graph TD
+    A[Developer modifies code] --> B[Stage changes with git add]
+    B --> C[Husky triggers pre-commit hook]
+    C --> D[Code Review Package runs]
+    D --> E[Extract staged files]
+    E --> F[Load language config and prompt template]
+    F --> G[Read file content]
+    G --> H[Build API request with context]
+    H --> I[RAG API receives request]
+    I --> J[Process with LLM]
+    J --> K[Return review feedback]
+    K --> L[Parse feedback]
+    L --> M{Severity check<br/>High/Critical?}
+    M -->|Yes| N[Block commit and show feedback]
+    M -->|No| O[Allow commit to proceed]
+    O --> P[Complete git commit]
+    N --> Q[Developer fixes issues]
+    Q --> B
+    
+    style A fill:#e1f5fe
+    style P fill:#e8f5e8
+    style N fill:#ffebee
+    style Q fill:#fff3e0
+```
+
 ## Supported Languages
 
 See the "Language Support Configuration" section above for a complete list of supported languages and file extensions.
