@@ -10,7 +10,7 @@ graph TD
     B --> C[Husky triggers pre-commit hook]
     C --> D[Code Review Package runs]
     D --> E[Extract staged files]
-    E --> F[Load language config and prompt template]
+    E --> F[Load language config and prompt template from YAML]
     F --> G[Read file content]
     G --> H[Build API request with context]
     H --> I[RAG API receives request]

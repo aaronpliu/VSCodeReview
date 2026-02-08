@@ -1,8 +1,9 @@
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import path from 'path';
 import glob from 'glob';
 import { Minimatch } from 'minimatch';
 import { ApiClient } from './api-client';
+import * as jsYaml from 'js-yaml';
 
 interface LanguageConfig {
   extensions: string[];
@@ -42,16 +43,16 @@ export class Reviewer {
 
   private loadLanguageConfiguration(): void {
     try {
-      // Try to load from local config first, fall back to embedded config
-      const configPath = path.resolve(__dirname, '../languages.json');
+      // Only look for YAML configuration files
+      const configPath = path.resolve(__dirname, '../languages.yaml');
       
-      // Check if the config file exists before trying to read it
       if (fs.existsSync(configPath)) {
-        const configData = fs.readJSONSync(configPath) as { languages: LanguageSupport };
+        const fileContent = fs.readFileSync(configPath, 'utf8');
+        const configData = jsYaml.load(fileContent);
         
         // Build the extension map from the configuration
-        for (const [language, config] of Object.entries(configData.languages)) {
-          for (const ext of config.extensions) {
+        for (const [language, config] of Object.entries((configData as any).languages)) {
+          for (const ext of (config as LanguageConfig).extensions) {
             this.supportedExtensions.set(ext, language);
           }
         }
@@ -88,12 +89,14 @@ export class Reviewer {
 
   private loadIgnorePatterns(): string[] {
     try {
-      const configPath = path.resolve(__dirname, '../languages.json');
+      // Only look for YAML configuration files
+      const configPath = path.resolve(__dirname, '../languages.yaml');
       
-      // Check if the config file exists before trying to read it
       if (fs.existsSync(configPath)) {
-        const configData = fs.readJSONSync(configPath) as { ignorePatterns: string[] };
-        return configData.ignorePatterns;
+        const fileContent = fs.readFileSync(configPath, 'utf8');
+        const configData = jsYaml.load(fileContent);
+        
+        return (configData as any).ignorePatterns;
       } else {
         // Return default ignore patterns if file doesn't exist
         return this.getDefaultIgnorePatterns();
@@ -192,7 +195,7 @@ export class Reviewer {
       const review = await this.apiClient.sendReviewRequest(
         content,
         language,
-        path.basename(filePath),
+        filePath,
         this.template,
         this.ticketId,
         this.additionalInfo
@@ -200,33 +203,33 @@ export class Reviewer {
 
       return {
         fileName: filePath,
-        feedback: review.feedback,
-        suggestions: review.suggestions,
-        severity: review.severity
+        ...review
       };
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(`Error reviewing file ${filePath}:`, error.message);
-      } else {
-        console.error(`Unknown error reviewing file ${filePath}:`, String(error));
-      }
+      console.error(`Error reviewing file ${filePath}:`, error);
       return null;
     }
   }
-
+  
   async printReviewResults(results: ReviewResult[]): Promise<void> {
+    if (results.length === 0) {
+      console.log('No review results to display.');
+      return;
+    }
+
     for (const result of results) {
-      console.log(`\n--- Review for: ${result.fileName} ---`);
-      console.log(`Severity: ${result.severity.toUpperCase()}`);
+      console.log(`\n--- Code Review for: ${result.fileName} ---`);
+      console.log(`Severity: ${result.severity}`);
       console.log(`Feedback:\n${result.feedback}`);
       
-      if (result.suggestions.length > 0) {
-        console.log('\nSuggestions:');
+      if (result.suggestions && result.suggestions.length > 0) {
+        console.log(`Suggestions:`);
         result.suggestions.forEach((suggestion, index) => {
           console.log(`${index + 1}. ${suggestion}`);
         });
       }
-      console.log('--- End of review ---\n');
+      
+      console.log('--- End of Review ---\n');
     }
   }
 }

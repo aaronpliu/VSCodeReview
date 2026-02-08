@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import fs from 'fs-extra';
 import path from 'path';
+import * as jsYaml from 'js-yaml';
 
 interface ReviewRequest {
   query: string;
@@ -46,10 +47,12 @@ export class ApiClient {
 
   private loadPromptTemplates(): void {
     try {
-      const configPath = path.resolve(__dirname, '../prompt-templates.json');
+      // Only look for YAML configuration files
+      const configPath = path.resolve(__dirname, '../prompt-templates.yaml');
       
       if (fs.existsSync(configPath)) {
-        this.promptTemplates = fs.readJSONSync(configPath) as PromptTemplatesConfig;
+        const fileContent = fs.readFileSync(configPath, 'utf8');
+        this.promptTemplates = jsYaml.load(fileContent) as PromptTemplatesConfig;
       } else {
         console.warn('Prompt templates configuration not found, using default template');
       }

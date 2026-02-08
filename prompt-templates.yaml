@@ -1,0 +1,132 @@
+# Default template to use when none is specified
+defaultTemplate: &defaultTemplate security
+
+# Available prompt templates for code reviews
+templates:
+  security:
+    name: Security-focused Review
+    purpose: Identify security vulnerabilities and potential threats
+    prompt: |
+      Perform a comprehensive security analysis of the provided code.
+      
+      Focus on identifying:
+      - Injection vulnerabilities (SQL injection, command injection, XSS, etc.)
+      - Authentication and authorization weaknesses
+      - Data validation issues
+      - Session management flaws
+      - Cryptographic implementation problems
+      - Secure configuration concerns
+      - Privilege escalation possibilities
+      
+      For each vulnerability identified:
+      1. Explain the security risk and potential impact
+      2. Provide specific code locations where the issue occurs
+      3. Recommend practical mitigation strategies with code examples when appropriate
+      4. Categorize severity as high/medium/low
+    severityThreshold: high
+
+  best-practices:
+    name: Best Practices Review
+    purpose: Ensure adherence to language-specific standards and patterns
+    prompt: |
+      Conduct a thorough review of the code against established best practices.
+      
+      Evaluate:
+      - Proper use of language-specific idioms and conventions
+      - Appropriate design patterns and architectural principles
+      - Error handling and logging practices
+      - Resource management and cleanup procedures
+      - Performance implications of the implementation
+      - Maintainability and extensibility considerations
+      
+      Provide constructive feedback including:
+      - Specific recommendations for improvements
+      - Alternative approaches where applicable
+      - References to relevant documentation or standards
+      - Priority level for each suggestion
+    severityThreshold: medium
+
+  style:
+    name: Style and Formatting Review
+    purpose: Ensure consistent formatting and naming conventions
+    prompt: |
+      Review the code for adherence to consistent style and formatting standards.
+      
+      Check for:
+      - Naming conventions compliance (variables, functions, classes, etc.)
+      - Consistent indentation and spacing
+      - Appropriate commenting practices
+      - Code organization and structure
+      - Import/ordering consistency
+      - Line length and file organization
+      
+      Suggestions should include:
+      - Specific style guide references when applicable
+      - Automated tooling recommendations for enforcement
+      - Before/after examples for clarity
+      - Differentiation between required fixes and optional improvements
+    severityThreshold: low
+
+  performance:
+    name: Performance Review
+    purpose: Identify bottlenecks and optimization opportunities
+    prompt: |
+      Analyze the code for performance characteristics and efficiency.
+      
+      Look for:
+      - Algorithmic inefficiencies (time/space complexity)
+      - Memory usage patterns and potential leaks
+      - Database query optimization opportunities
+      - Network I/O and concurrency issues
+      - Unnecessary computations or redundant operations
+      - Caching strategies and opportunities
+      
+      Recommendations should include:
+      - Measurable performance impact estimates
+      - Specific code modifications
+      - Benchmarking suggestions where appropriate
+      - Trade-off analysis between performance and maintainability
+    severityThreshold: medium
+
+  maintainability:
+    name: Maintainability Review
+    purpose: Assess code modularity and ease of modification
+    prompt: |
+      Evaluate the code's maintainability and long-term sustainability.
+      
+      Consider:
+      - Code complexity and cognitive load
+      - Module cohesion and separation of concerns
+      - Dependency management and coupling
+      - Documentation completeness and accuracy
+      - Testability and ability to add tests
+      - Extensibility for future requirements
+      
+      Feedback should include:
+      - Refactoring suggestions with specific approaches
+      - Architectural improvements
+      - Areas that need additional documentation
+      - Recommendations for improving test coverage
+    severityThreshold: medium
+
+  comprehensive:
+    name: Comprehensive Review
+    purpose: Full-spectrum code quality assessment
+    prompt: |
+      Perform a complete code quality assessment covering all aspects.
+      
+      Examine thoroughly:
+      - Security vulnerabilities and threat modeling
+      - Best practices and language idioms
+      - Performance bottlenecks and optimizations
+      - Maintainability and architectural concerns
+      - Code style and formatting consistency
+      - Potential bugs and edge cases
+      
+      Deliver structured feedback organized by:
+      - Critical/high-priority items requiring immediate attention
+      - Medium-term improvements for code quality
+      - Long-term architectural or strategic enhancements
+      - Risk assessment for each identified issue
+      - Clear, actionable remediation steps
+    severityThreshold: high
