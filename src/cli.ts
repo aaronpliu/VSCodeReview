@@ -50,16 +50,12 @@ program
   .option('-e, --endpoint <endpoint>', 'RAG API endpoint', '/api/v1/query')
   .option('-h, --host <host>', 'API host', 'http://localhost:8080')
   .option('-t, --template <template>', 'prompt template to use', 'security')
-  .option('--ticket-id <ticketId>', 'associated ticket ID for the review')
-  .option('--additional-info <info>', 'additional context for the review')
   .action(async (options) => {
     try {
       const apiClient = new ApiClient(options.host, options.endpoint, options.template);
       const huskyIntegration = new HuskyIntegration(
         apiClient, 
         options.template, 
-        options.ticketId, 
-        options.additionalInfo,
         options.host,
         options.endpoint
       );
@@ -81,16 +77,12 @@ program
   .option('-e, --endpoint <endpoint>', 'RAG API endpoint', '/api/v1/query')
   .option('-h, --host <host>', 'API host', 'http://localhost:8080')
   .option('-t, --template <template>', 'prompt template to use', 'security')
-  .option('--ticket-id <ticketId>', 'associated ticket ID for the review')
-  .option('--additional-info <info>', 'additional context for the review')
   .action(async (options) => {
     try {
       const apiClient = new ApiClient(options.host, options.endpoint, options.template);
       const huskyIntegration = new HuskyIntegration(
         apiClient, 
-        options.template, 
-        options.ticketId, 
-        options.additionalInfo,
+        options.template,
         options.host,
         options.endpoint
       );

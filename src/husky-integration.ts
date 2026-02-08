@@ -6,22 +6,16 @@ import { ApiClient } from './api-client';
 
 export class HuskyIntegration {
   private template: string;
-  private ticketId?: string;
-  private additionalInfo?: string;
   private host: string;
   private endpoint: string;
 
   constructor(
     private apiClient: ApiClient, 
     template: string = 'security',
-    ticketId?: string,
-    additionalInfo?: string,
     host: string = 'http://localhost:8080',
     endpoint: string = '/api/v1/query'
   ) {
     this.template = template;
-    this.ticketId = ticketId;
-    this.additionalInfo = additionalInfo;
     this.host = host;
     this.endpoint = endpoint;
   }
@@ -41,7 +35,10 @@ export class HuskyIntegration {
 
       console.log(`Found ${stagedFiles.length} staged files to review.`);
       
-      const reviewer = new Reviewer(this.apiClient, this.template, this.ticketId, this.additionalInfo);
+      // Extract ticketId and additionalInfo from the commit message
+      const { ticketId, additionalInfo } = await this.extractCommitContext();
+      
+      const reviewer = new Reviewer(this.apiClient, this.template, ticketId, additionalInfo);
       const results = await reviewer.reviewFiles(stagedFiles);
       
       // Print results
@@ -66,6 +63,69 @@ export class HuskyIntegration {
       }
       return false;
     }
+  }
+
+  /**
+   * Extracts ticketId and additionalInfo from the commit message
+   */
+  private async extractCommitContext(): Promise<{ ticketId?: string; additionalInfo?: string }> {
+    try {
+      // For pre-commit hook, we need to get the commit message differently
+      // Husky sets GIT_PARAMS which points to the temp file containing the commit message
+      const gitParams = process.env.HUSKY_GIT_PARAMS;
+      
+      if (gitParams) {
+        // If we have git params, read the commit message file
+        const commitMessage = fs.readFileSync(gitParams, 'utf-8').trim();
+        return this.parseCommitMessage(commitMessage);
+      } else {
+        // Fallback: try to get the last commit message (useful for testing)
+        try {
+          const lastCommitMessage = execSync('git log -1 --pretty=%B', { encoding: 'utf-8' }).trim();
+          return this.parseCommitMessage(lastCommitMessage);
+        } catch (e) {
+          console.warn('Could not retrieve commit message, proceeding without context');
+          return { ticketId: undefined, additionalInfo: undefined };
+        }
+      }
+    } catch (error) {
+      console.error('Error extracting commit context:', error);
+      return { ticketId: undefined, additionalInfo: undefined };
+    }
+  }
+
+  /**
+   * Parse the commit message to extract ticketId and additional info
+   */
+  private parseCommitMessage(message: string): { ticketId?: string; additionalInfo?: string } {
+    // Extract ticket ID using regex patterns
+    const ticketIdMatch = message.match(/([A-Z0-9]+-\d+)/); // Matches PROJ-123 format
+    const hashTicketIdMatch = message.match(/#(\d+)/); // Matches #123 format
+    
+    let ticketId: string | undefined;
+    if (ticketIdMatch) {
+      ticketId = ticketIdMatch[0];
+    } else if (hashTicketIdMatch) {
+      ticketId = `#${hashTicketIdMatch[1]}`;
+    }
+    
+    // Use the full message as additional info if it's not just a ticket ID
+    let additionalInfo: string | undefined;
+    if (message) {
+      // Remove the ticket ID from the message to avoid duplication
+      let cleanedMessage = message;
+      if (ticketIdMatch) {
+        cleanedMessage = cleanedMessage.replace(ticketIdMatch[0], '').trim();
+      } else if (hashTicketIdMatch) {
+        cleanedMessage = cleanedMessage.replace(`#${hashTicketIdMatch[1]}`, '').trim();
+      }
+      
+      if (cleanedMessage) {
+        additionalInfo = cleanedMessage;
+      }
+    }
+    
+    return { ticketId, additionalInfo };
   }
 
   /**
@@ -118,20 +178,8 @@ export class HuskyIntegration {
       existingHookContent = fs.readFileSync(preCommitPath, 'utf-8');
     }
     
-    // Create the code review command with all parameters
+    // Create the code review command with all parameters except ticketId and additionalInfo
     let codeReviewCommand = `npx @jc-vendor/code-review pre-commit --host ${this.host} --endpoint ${this.endpoint} --template ${this.template}`;
-    
-    // Add ticket ID if provided
-    if (this.ticketId) {
-      codeReviewCommand += ` --ticket-id ${this.ticketId}`;
-    }
-    
-    // Add additional info if provided
-    if (this.additionalInfo) {
-      // Escape the additional info for shell
-      const escapedInfo = this.additionalInfo.replace(/'/g, "'\\''");
-      codeReviewCommand += ` --additional-info '${escapedInfo}'`;
-    }
     
     codeReviewCommand += '\n';
     
