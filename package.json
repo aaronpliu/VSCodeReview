@@ -33,7 +33,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jc-vendor/code-review.git"
+    "url": "https://github.com/aaronpliu/VSCodeReview.git"
   },
   "engines": {
     "node": ">=18.0.0"
