@@ -5,33 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.1.1] - 2026-02-08
+
+### Added
+- New YAML configuration support for both languages.yaml and prompt-templates.yaml
+- Enhanced prompts with more detailed instructions for all template categories
+- Standardized documentation in docs/ directory
+
+### Changed
+- Optimized configuration loading to only use YAML files (removed JSON fallback)
+- Updated all configuration loading logic to exclusively use YAML format
+- Improved documentation structure following standardized format
+- Refactored code to improve maintainability
+
+### Fixed
+- Fixed fs-extra usage in configuration loading
+- Resolved issues with async/await in configuration loading
+
 ## [1.1.0] - 2026-02-08
 
 ### Added
-- Extended language support to 30+ programming languages via configurable JSON
-- Configuration file (`languages.json`) for managing supported languages and extensions
-- Support for Go, Rust, C#, C++, Ruby, PHP, Dart, Scala, Lua, Perl, Haskell, Elixir, Erlang, Clojure, OCaml, Crystal, Nim, Zig, Solidity, Dockerfile, and SQL
-- Extended ignore patterns for better performance
-- Configurable code review prompt templates for different purposes (security, best-practices, style, performance, maintainability, comprehensive)
-- New `prompt-templates.json` configuration file with multiple review templates
-- CLI option to specify which template to use for code reviews
-- New `list-templates` command to view available prompt templates
-- Enhanced API client to support configurable prompts with the RAG API
+- Multiple code review templates (security, best-practices, style, performance, maintainability, comprehensive)
+- Husky integration for pre-commit hooks
+- Automated context extraction from commit messages
+- Multi-language support with configurable language detection
 
 ### Changed
-- Refactored [Reviewer](file:///Users/aaronliu/Documents/repositories/VSCodeReview/src/reviewer.ts#L28-L210) class to load language configuration dynamically from JSON
-- Improved error handling for missing configuration files with graceful fallback
-- Enhanced documentation to reflect new configuration system
-- Updated package version to 1.1.0
+- Improved error handling and fallback mechanisms
+- Enhanced API client with better error reporting
 
 ## [1.0.0] - 2026-02-08
 
 ### Added
-- Initial release of `@jc-vendor/code-review` package
-- Multi-language support (JavaScript, TypeScript, Java, Kotlin, Swift, Objective-C, Python, Shell, Groovy)
-- Integration with Husky for Git hooks
-- RAG API-powered code review capabilities
-- Pre-commit hook validation
-- Command-line interface for manual reviews
-- Non-destructive hook installation (appends to existing hooks instead of replacing them)
-- GitHub Actions workflows for testing and publishing
+- Initial release of the code review package
+- Basic code review functionality
+- Command-line interface
+- Integration with RAG API
