@@ -10,6 +10,7 @@ Welcome to the documentation for the `@jc-vendor/code-review` package. This comp
 - [Workflow](#workflow)
 - [Configuration](#configuration)
 - [API Integration](#api-integration)
+- [Additional Resources](#additional-resources)
 
 ## Overview
 
@@ -209,3 +210,10 @@ And respond with:
   "severity": "low|medium|high|critical"
 }
 ```
+
+## Additional Resources
+
+- [Local Installation Guide](local-installation.md) - Detailed instructions for installing the package locally during development
+- [Husky Integration Guide](husky-integration.md) - Comprehensive guide to integrating with Husky for Git hooks
+- [Workflow Diagram](workflow-diagram.md) - Detailed visualization of the code review workflow
+- [Quick Reference](quick-reference.md) - Quick reference guide with common commands and options
