@@ -13,7 +13,8 @@
     "code-review": "./dist/cli.js"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "languages.json"
   ],
   "keywords": [
     "code-review",
@@ -27,7 +28,7 @@
     "python",
     "git-hooks"
   ],
-  "author": "Aaron LIU",
+  "author": "Your Name",
   "license": "MIT",
   "repository": {
     "type": "git",

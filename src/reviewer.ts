@@ -4,6 +4,15 @@ import glob from 'glob';
 import { Minimatch } from 'minimatch';
 import { ApiClient } from './api-client';
 
+interface LanguageConfig {
+  extensions: string[];
+  displayName: string;
+}
+
+interface LanguageSupport {
+  [language: string]: LanguageConfig;
+}
+
 interface ReviewResult {
   fileName: string;
   feedback: string;
@@ -12,41 +21,97 @@ interface ReviewResult {
 }
 
 export class Reviewer {
-  // Supported file extensions mapped to language names
-  private readonly supportedExtensions: { [ext: string]: string } = {
-    '.js': 'javascript',
-    '.ts': 'typescript',
-    '.jsx': 'javascript',
-    '.tsx': 'typescript',
-    '.java': 'java',
-    '.groovy': 'groovy',
-    '.kt': 'kotlin',
-    '.swift': 'swift',
-    '.m': 'objective-c',
-    '.sh': 'shell',
-    '.py': 'python'
-  };
+  private readonly supportedExtensions: Map<string, string> = new Map(); // extension -> language
+  private readonly ignorePatterns: string[];
 
-  // Files to ignore during review
-  private readonly ignorePatterns = [
-    '**/node_modules/**',
-    '**/.git/**',
-    '**/dist/**',
-    '**/build/**',
-    '**/*.min.js',
-    '**/coverage/**',
-    '**/.nyc_output/**'
-  ];
+  constructor(private apiClient: ApiClient) {
+    this.loadLanguageConfiguration();
+    this.ignorePatterns = this.loadIgnorePatterns();
+  }
 
-  constructor(private apiClient: ApiClient) {}
+  private loadLanguageConfiguration(): void {
+    try {
+      // Try to load from local config first, fall back to embedded config
+      const configPath = path.resolve(__dirname, '../languages.json');
+      
+      // Check if the config file exists before trying to read it
+      if (fs.existsSync(configPath)) {
+        const configData = fs.readJSONSync(configPath) as { languages: LanguageSupport };
+        
+        // Build the extension map from the configuration
+        for (const [language, config] of Object.entries(configData.languages)) {
+          for (const ext of config.extensions) {
+            this.supportedExtensions.set(ext, language);
+          }
+        }
+      } else {
+        // Fallback to default configuration if file doesn't exist
+        this.setupDefaultConfiguration();
+      }
+    } catch (error) {
+      console.error('Failed to load language configuration:', error);
+      // Fallback to default configuration if there's an error
+      this.setupDefaultConfiguration();
+    }
+  }
+
+  private setupDefaultConfiguration(): void {
+    const fallbackExtensions: { [ext: string]: string } = {
+      '.js': 'javascript',
+      '.ts': 'typescript',
+      '.jsx': 'javascript',
+      '.tsx': 'typescript',
+      '.java': 'java',
+      '.groovy': 'groovy',
+      '.kt': 'kotlin',
+      '.swift': 'swift',
+      '.m': 'objective-c',
+      '.sh': 'shell',
+      '.py': 'python'
+    };
+    
+    Object.entries(fallbackExtensions).forEach(([ext, lang]) => {
+      this.supportedExtensions.set(ext, lang);
+    });
+  }
+
+  private loadIgnorePatterns(): string[] {
+    try {
+      const configPath = path.resolve(__dirname, '../languages.json');
+      
+      // Check if the config file exists before trying to read it
+      if (fs.existsSync(configPath)) {
+        const configData = fs.readJSONSync(configPath) as { ignorePatterns: string[] };
+        return configData.ignorePatterns;
+      } else {
+        // Return default ignore patterns if file doesn't exist
+        return this.getDefaultIgnorePatterns();
+      }
+    } catch (error) {
+      console.error('Failed to load ignore patterns:', error);
+      // Return default ignore patterns if there's an error
+      return this.getDefaultIgnorePatterns();
+    }
+  }
+
+  private getDefaultIgnorePatterns(): string[] {
+    return [
+      '**/node_modules/**',
+      '**/.git/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/*.min.js',
+      '**/coverage/**',
+      '**/.nyc_output/**'
+    ];
+  }
 
   async reviewDirectory(dirPath: string): Promise<ReviewResult[]> {
     const results: ReviewResult[] = [];
     
     // Find all supported files in the directory
-    const supportedPatterns = Object.keys(this.supportedExtensions).map(ext => `**/*${ext}`);
-    const allFiles = supportedPatterns.flatMap(pattern => 
-      glob.sync(path.join(dirPath, pattern).replace(/\\/g, '/'), { 
+    const allFiles = Array.from(this.supportedExtensions.keys()).flatMap(ext => 
+      glob.sync(path.join(dirPath, `**/*${ext}`).replace(/\\/g, '/'), { 
         ignore: this.ignorePatterns 
       })
     );
@@ -73,7 +138,9 @@ export class Reviewer {
 
       // Check if file extension is supported
       const ext = path.extname(filePath);
-      if (!this.supportedExtensions[ext]) {
+      const language = this.supportedExtensions.get(ext);
+      
+      if (!language) {
         console.warn(`Unsupported file type: ${filePath} (${ext})`);
         continue;
       }
@@ -102,7 +169,7 @@ export class Reviewer {
     try {
       const content = await fs.readFile(filePath, 'utf-8');
       const ext = path.extname(filePath);
-      const language = this.supportedExtensions[ext];
+      const language = this.supportedExtensions.get(ext);
 
       if (!language) {
         console.warn(`Unsupported file extension: ${ext}`);

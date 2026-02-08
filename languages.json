@@ -1,0 +1,143 @@
+{
+  "languages": {
+    "javascript": {
+      "extensions": [".js", ".jsx"],
+      "displayName": "JavaScript"
+    },
+    "typescript": {
+      "extensions": [".ts", ".tsx"],
+      "displayName": "TypeScript"
+    },
+    "java": {
+      "extensions": [".java"],
+      "displayName": "Java"
+    },
+    "kotlin": {
+      "extensions": [".kt", ".kts"],
+      "displayName": "Kotlin"
+    },
+    "swift": {
+      "extensions": [".swift"],
+      "displayName": "Swift"
+    },
+    "objective-c": {
+      "extensions": [".m", ".mm"],
+      "displayName": "Objective-C"
+    },
+    "python": {
+      "extensions": [".py", ".pyi"],
+      "displayName": "Python"
+    },
+    "shell": {
+      "extensions": [".sh", ".bash", ".zsh"],
+      "displayName": "Shell"
+    },
+    "groovy": {
+      "extensions": [".groovy", ".gvy", ".gradle"],
+      "displayName": "Groovy"
+    },
+    "go": {
+      "extensions": [".go"],
+      "displayName": "Go"
+    },
+    "rust": {
+      "extensions": [".rs"],
+      "displayName": "Rust"
+    },
+    "csharp": {
+      "extensions": [".cs"],
+      "displayName": "C#"
+    },
+    "cpp": {
+      "extensions": [".cpp", ".cxx", ".cc", ".c++", ".hpp", ".hxx", ".hh", ".h++"],
+      "displayName": "C++"
+    },
+    "ruby": {
+      "extensions": [".rb", ".rbw"],
+      "displayName": "Ruby"
+    },
+    "php": {
+      "extensions": [".php", ".php3", ".php4", ".php5", ".phtml"],
+      "displayName": "PHP"
+    },
+    "dart": {
+      "extensions": [".dart"],
+      "displayName": "Dart"
+    },
+    "scala": {
+      "extensions": [".scala", ".sc"],
+      "displayName": "Scala"
+    },
+    "lua": {
+      "extensions": [".lua"],
+      "displayName": "Lua"
+    },
+    "perl": {
+      "extensions": [".pl", ".pm", ".pod", ".t", ".plx"],
+      "displayName": "Perl"
+    },
+    "haskell": {
+      "extensions": [".hs", ".lhs"],
+      "displayName": "Haskell"
+    },
+    "elixir": {
+      "extensions": [".ex", ".exs"],
+      "displayName": "Elixir"
+    },
+    "erlang": {
+      "extensions": [".erl", ".hrl"],
+      "displayName": "Erlang"
+    },
+    "clojure": {
+      "extensions": [".clj", ".cljs", ".cljc", ".edn"],
+      "displayName": "Clojure"
+    },
+    "ocaml": {
+      "extensions": [".ml", ".mli"],
+      "displayName": "OCaml"
+    },
+    "crystal": {
+      "extensions": [".cr"],
+      "displayName": "Crystal"
+    },
+    "nim": {
+      "extensions": [".nim"],
+      "displayName": "Nim"
+    },
+    "zig": {
+      "extensions": [".zig"],
+      "displayName": "Zig"
+    },
+    "solidity": {
+      "extensions": [".sol"],
+      "displayName": "Solidity"
+    },
+    "dockerfile": {
+      "extensions": [".dockerfile", "Dockerfile"],
+      "displayName": "Dockerfile"
+    },
+    "sql": {
+      "extensions": [".sql"],
+      "displayName": "SQL"
+    }
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/*.min.js",
+    "**/coverage/**",
+    "**/.nyc_output/**",
+    "**/vendor/**",
+    "**/third_party/**",
+    "**/*.dll",
+    "**/*.so",
+    "**/*.exe",
+    "**/*.bin",
+    "**/*.log",
+    "**/*.bak",
+    "**/*.tmp",
+    "**/*.temp"
+  ]
+}

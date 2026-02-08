@@ -4,12 +4,13 @@ A comprehensive code review tool that integrates with Git hooks via Husky and le
 
 ## Features
 
-- Multi-language support (JavaScript, TypeScript, Java, Kotlin, Swift, Objective-C, Python, Shell, Groovy)
+- Multi-language support (JavaScript, TypeScript, Java, Kotlin, Swift, Objective-C, Python, Shell, Groovy and many more)
 - Integration with Husky for Git hooks
 - RAG API-powered code review capabilities
 - Pre-commit hook validation
 - Command-line interface for manual reviews
 - Non-destructive hook installation (appends to existing hooks instead of replacing them)
+- Configurable language support via JSON configuration
 
 ## Installation
 
@@ -58,6 +59,44 @@ npx @jc-vendor/code-review --install-hook
 
 ## Configuration
 
+### Language Support Configuration
+
+The package supports configurable language detection via the `languages.json` file. This file defines which file extensions map to which programming languages. You can modify this file to add or remove language support according to your project needs.
+
+The current configuration supports:
+- JavaScript (.js, .jsx)
+- TypeScript (.ts, .tsx)
+- Java (.java)
+- Kotlin (.kt, .kts)
+- Swift (.swift)
+- Objective-C (.m, .mm)
+- Python (.py, .pyi)
+- Shell scripts (.sh, .bash, .zsh)
+- Groovy (.groovy, .gvy, .gradle)
+- Go (.go)
+- Rust (.rs)
+- C# (.cs)
+- C++ (.cpp, .cxx, .cc, .c++, .hpp, .hxx, .hh, .h++)
+- Ruby (.rb, .rbw)
+- PHP (.php, .php3, .php4, .php5, .phtml)
+- Dart (.dart)
+- Scala (.scala, .sc)
+- Lua (.lua)
+- Perl (.pl, .pm, .pod, .t, .plx)
+- Haskell (.hs, .lhs)
+- Elixir (.ex, .exs)
+- Erlang (.erl, .hrl)
+- Clojure (.clj, .cljs, .cljc, .edn)
+- OCaml (.ml, .mli)
+- Crystal (.cr)
+- Nim (.nim)
+- Zig (.zig)
+- Solidity (.sol)
+- Dockerfile (.dockerfile, Dockerfile)
+- SQL (.sql)
+
+### API Configuration
+
 The package connects to your RAG API with the following defaults:
 - Endpoint: `/api/v1/query`
 - Host: `http://localhost:8080`
@@ -66,15 +105,7 @@ These can be customized via CLI flags or environment variables.
 
 ## Supported Languages
 
-- JavaScript (.js, .jsx)
-- TypeScript (.ts, .tsx)
-- Java (.java)
-- Kotlin (.kt)
-- Swift (.swift)
-- Objective-C (.m)
-- Python (.py)
-- Shell scripts (.sh)
-- Groovy (.groovy)
+See the "Language Support Configuration" section above for a complete list of supported languages and file extensions.
 
 ## API Integration
 
