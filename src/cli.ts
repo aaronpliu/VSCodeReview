@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { Reviewer } from './reviewer';
 import { ApiClient } from './api-client';
 import { HuskyIntegration } from './husky-integration';
+import path from 'path';
 
 const program = new Command();
 
@@ -54,7 +55,14 @@ program
   .action(async (options) => {
     try {
       const apiClient = new ApiClient(options.host, options.endpoint, options.template);
-      const huskyIntegration = new HuskyIntegration(apiClient, options.template, options.ticketId, options.additionalInfo);
+      const huskyIntegration = new HuskyIntegration(
+        apiClient, 
+        options.template, 
+        options.ticketId, 
+        options.additionalInfo,
+        options.host,
+        options.endpoint
+      );
       const repoPath = process.cwd();
       huskyIntegration.installPreCommitHook(repoPath);
     } catch (error) {
@@ -78,7 +86,14 @@ program
   .action(async (options) => {
     try {
       const apiClient = new ApiClient(options.host, options.endpoint, options.template);
-      const huskyIntegration = new HuskyIntegration(apiClient, options.template, options.ticketId, options.additionalInfo);
+      const huskyIntegration = new HuskyIntegration(
+        apiClient, 
+        options.template, 
+        options.ticketId, 
+        options.additionalInfo,
+        options.host,
+        options.endpoint
+      );
       const success = await huskyIntegration.runPreCommitReview();
       if (!success) {
         process.exit(1);

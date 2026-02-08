@@ -8,16 +8,22 @@ export class HuskyIntegration {
   private template: string;
   private ticketId?: string;
   private additionalInfo?: string;
+  private host: string;
+  private endpoint: string;
 
   constructor(
     private apiClient: ApiClient, 
     template: string = 'security',
     ticketId?: string,
-    additionalInfo?: string
+    additionalInfo?: string,
+    host: string = 'http://localhost:8080',
+    endpoint: string = '/api/v1/query'
   ) {
     this.template = template;
     this.ticketId = ticketId;
     this.additionalInfo = additionalInfo;
+    this.host = host;
+    this.endpoint = endpoint;
   }
 
   /**
@@ -112,8 +118,8 @@ export class HuskyIntegration {
       existingHookContent = fs.readFileSync(preCommitPath, 'utf-8');
     }
     
-    // Create the code review command with template option
-    let codeReviewCommand = `npx @jc-vendor/code-review pre-commit --template ${this.template}`;
+    // Create the code review command with all parameters
+    let codeReviewCommand = `npx @jc-vendor/code-review pre-commit --host ${this.host} --endpoint ${this.endpoint} --template ${this.template}`;
     
     // Add ticket ID if provided
     if (this.ticketId) {
