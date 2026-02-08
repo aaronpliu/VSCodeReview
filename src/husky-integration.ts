@@ -99,12 +99,8 @@ export class HuskyIntegration {
    */
   private parseCommitMessage(message: string): { ticketId?: string; additionalInfo?: string } {
     // Define patterns for different ticket ID formats:
-    // - PRJ1234-0235 (letters followed by digits, dash, more digits)
-    // - GIA-123 (letters, dash, digits)
-    // - SQ1234-0123 (similar to first format)
-    // - Original formats: PROJ-123, #123
     const patterns = [
-      /([A-Z]{2,}-?\d{3,}-\d{3,})/gi,  // Matches PRJ1234-0235, GIA-123, SQ1234-0123
+      /([A-Z]{2,}-?\d{3,}-\d{3,})/gi,  // Matches PRJ1234-0235, ABC-123, JIRA1234-0123
       /([A-Z0-9]+-\d+)/gi,              // Matches PROJ-123 format
       /#(\d+)/gi                        // Matches #123 format
     ];
