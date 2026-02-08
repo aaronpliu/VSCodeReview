@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name('@jc-vendor/code-review')
   .description('CLI tool for code review using RAG API')
-  .version('1.0.0');
+  .version('1.1.0');
 
 program
   .command('review')
@@ -20,9 +20,10 @@ program
   .option('-e, --endpoint <endpoint>', 'RAG API endpoint', '/api/v1/query')
   .option('-h, --host <host>', 'API host', 'http://localhost:8080')
   .option('-f, --files <files...>', 'specific files to review')
+  .option('-t, --template <template>', 'prompt template to use', 'security')
   .action(async (options) => {
-    const apiClient = new ApiClient(options.host, options.endpoint);
-    const reviewer = new Reviewer(apiClient);
+    const apiClient = new ApiClient(options.host, options.endpoint, options.template);
+    const reviewer = new Reviewer(apiClient, options.template);
 
     try {
       if (options.files && options.files.length > 0) {
@@ -46,10 +47,11 @@ program
   .description('Install pre-commit hook for Husky')
   .option('-e, --endpoint <endpoint>', 'RAG API endpoint', '/api/v1/query')
   .option('-h, --host <host>', 'API host', 'http://localhost:8080')
+  .option('-t, --template <template>', 'prompt template to use', 'security')
   .action(async (options) => {
     try {
-      const apiClient = new ApiClient(options.host, options.endpoint);
-      const huskyIntegration = new HuskyIntegration(apiClient);
+      const apiClient = new ApiClient(options.host, options.endpoint, options.template);
+      const huskyIntegration = new HuskyIntegration(apiClient, options.template);
       const repoPath = process.cwd();
       huskyIntegration.installPreCommitHook(repoPath);
     } catch (error) {
@@ -67,10 +69,11 @@ program
   .description('Run code review on staged files (for use in pre-commit hook)')
   .option('-e, --endpoint <endpoint>', 'RAG API endpoint', '/api/v1/query')
   .option('-h, --host <host>', 'API host', 'http://localhost:8080')
+  .option('-t, --template <template>', 'prompt template to use', 'security')
   .action(async (options) => {
     try {
-      const apiClient = new ApiClient(options.host, options.endpoint);
-      const huskyIntegration = new HuskyIntegration(apiClient);
+      const apiClient = new ApiClient(options.host, options.endpoint, options.template);
+      const huskyIntegration = new HuskyIntegration(apiClient, options.template);
       const success = await huskyIntegration.runPreCommitReview();
       if (!success) {
         process.exit(1);
@@ -80,6 +83,30 @@ program
         console.error('Error during pre-commit review:', error.message);
       } else {
         console.error('Unknown error during pre-commit review:', String(error));
+      }
+      process.exit(1);
+    }
+  });
+
+program
+  .command('list-templates')
+  .description('List available prompt templates')
+  .option('-e, --endpoint <endpoint>', 'RAG API endpoint', '/api/v1/query')
+  .option('-h, --host <host>', 'API host', 'http://localhost:8080')
+  .action(async (options) => {
+    try {
+      const apiClient = new ApiClient(options.host, options.endpoint);
+      const templates = apiClient.getAvailableTemplates();
+      
+      console.log('Available prompt templates:');
+      templates.forEach(template => {
+        console.log(`- ${template}`);
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error listing templates:', error.message);
+      } else {
+        console.error('Unknown error listing templates:', String(error));
       }
       process.exit(1);
     }

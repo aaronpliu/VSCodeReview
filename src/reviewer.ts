@@ -23,8 +23,10 @@ interface ReviewResult {
 export class Reviewer {
   private readonly supportedExtensions: Map<string, string> = new Map(); // extension -> language
   private readonly ignorePatterns: string[];
+  private readonly template: string;
 
-  constructor(private apiClient: ApiClient) {
+  constructor(private apiClient: ApiClient, template: string = 'security') {
+    this.template = template;
     this.loadLanguageConfiguration();
     this.ignorePatterns = this.loadIgnorePatterns();
   }
@@ -176,12 +178,13 @@ export class Reviewer {
         return null;
       }
 
-      console.log(`Reviewing file: ${filePath} (${language})`);
+      console.log(`Reviewing file: ${filePath} (${language}) with template: ${this.template}`);
 
       const review = await this.apiClient.sendReviewRequest(
         content,
         language,
-        path.basename(filePath)
+        path.basename(filePath),
+        this.template
       );
 
       return {

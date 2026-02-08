@@ -5,7 +5,11 @@ import { Reviewer } from './reviewer';
 import { ApiClient } from './api-client';
 
 export class HuskyIntegration {
-  constructor(private apiClient: ApiClient) {}
+  private template: string;
+
+  constructor(private apiClient: ApiClient, template: string = 'security') {
+    this.template = template;
+  }
 
   /**
    * Runs code review on staged files before committing
@@ -22,7 +26,7 @@ export class HuskyIntegration {
 
       console.log(`Found ${stagedFiles.length} staged files to review.`);
       
-      const reviewer = new Reviewer(this.apiClient);
+      const reviewer = new Reviewer(this.apiClient, this.template);
       const results = await reviewer.reviewFiles(stagedFiles);
       
       // Print results
@@ -99,8 +103,8 @@ export class HuskyIntegration {
       existingHookContent = fs.readFileSync(preCommitPath, 'utf-8');
     }
     
-    // Create the code review command
-    const codeReviewCommand = 'npx @jc-vendor/code-review pre-commit\n';
+    // Create the code review command with template option
+    const codeReviewCommand = `npx @jc-vendor/code-review pre-commit --template ${this.template}\n`;
     
     // Check if the command is already in the hook to prevent duplicates
     if (existingHookContent.includes(codeReviewCommand.trim())) {

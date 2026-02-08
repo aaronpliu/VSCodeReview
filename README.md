@@ -11,6 +11,7 @@ A comprehensive code review tool that integrates with Git hooks via Husky and le
 - Command-line interface for manual reviews
 - Non-destructive hook installation (appends to existing hooks instead of replacing them)
 - Configurable language support via JSON configuration
+- Multiple code review templates for different purposes (security, best practices, style, performance, etc.)
 
 ## Installation
 
@@ -23,17 +24,20 @@ npm install @jc-vendor/code-review
 ### Command Line Interface
 
 ```bash
-# Review all files in the current directory
+# Review all files in the current directory with security-focused template (default)
 npx @jc-vendor/code-review
 
-# Review specific files
-npx @jc-vendor/code-review --files src/file1.js src/file2.ts
+# Review specific files with a specific template
+npx @jc-vendor/code-review --files src/file1.js src/file2.ts --template best-practices
 
-# Review a specific directory
-npx @jc-vendor/code-review --path ./src
+# Review a specific directory with performance-focused template
+npx @jc-vendor/code-review --path ./src --template performance
+
+# List available templates
+npx @jc-vendor/code-review list-templates
 
 # Specify custom API endpoint and host
-npx @jc-vendor/code-review --host http://your-rag-api.com --endpoint /api/v1/query
+npx @jc-vendor/code-review --host http://your-rag-api.com --endpoint /api/v1/query --template comprehensive
 ```
 
 ### With Husky Integration
@@ -50,9 +54,9 @@ npm install --save-dev husky
 npx husky install
 ```
 
-3. Install the pre-commit hook:
+3. Install the pre-commit hook with a specific template:
 ```bash
-npx @jc-vendor/code-review --install-hook
+npx @jc-vendor/code-review --install-hook --template security
 ```
 
 > **Note:** If your project already has a pre-commit hook configured, the `--install-hook` command will append the code review command to the existing hook instead of replacing it. The command checks for duplicates to prevent multiple insertions.
@@ -95,6 +99,19 @@ The current configuration supports:
 - Dockerfile (.dockerfile, Dockerfile)
 - SQL (.sql)
 
+### Prompt Template Configuration
+
+The package supports multiple code review templates for different purposes:
+
+- **security**: Focuses on identifying potential security vulnerabilities, injection attacks, authentication/authorization issues, and data protection concerns
+- **best-practices**: Reviews for adherence to language-specific best practices, design patterns, maintainability, readability, and performance
+- **style**: Evaluates code for consistency in formatting, naming conventions, indentation, and overall code style
+- **performance**: Analyzes code for performance bottlenecks, inefficient algorithms, memory usage, and optimization opportunities
+- **maintainability**: Assesses code for maintainability factors such as modularity, complexity, documentation, and ease of modification
+- **comprehensive**: Performs a thorough review covering security, best practices, performance, maintainability, style, and potential bugs
+
+You can customize these templates by modifying the `prompt-templates.json` file.
+
 ### API Configuration
 
 The package connects to your RAG API with the following defaults:
@@ -113,9 +130,17 @@ This package communicates with your RAG API via the `/api/v1/query` endpoint. Th
 
 ```json
 {
-  "content": "file content as string",
-  "language": "language identifier",
-  "fileName": "name of the file"
+  "query": "string",
+  "stream": false,
+  "context": [
+    {
+      "additionalProp1": {
+        "fileName": "string",
+        "language": "string",
+        "template": "string"
+      }
+    }
+  ]
 }
 ```
 

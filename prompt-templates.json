@@ -1,0 +1,35 @@
+{
+  "defaultTemplate": "security",
+  "templates": {
+    "security": {
+      "name": "Security-focused Review",
+      "prompt": "Analyze the following code for potential security vulnerabilities, injection attacks, authentication/authorization issues, and data protection concerns. Provide feedback on secure coding practices and recommend specific fixes for any security issues found.",
+      "severityThreshold": "high"
+    },
+    "best-practices": {
+      "name": "Best Practices Review",
+      "prompt": "Review the following code for adherence to language-specific best practices, design patterns, maintainability, readability, and performance considerations. Provide suggestions for improvements based on industry standards.",
+      "severityThreshold": "medium"
+    },
+    "style": {
+      "name": "Style and Formatting Review",
+      "prompt": "Evaluate the following code for consistency in formatting, naming conventions, indentation, and overall code style. Identify deviations from common style guides and suggest corrections.",
+      "severityThreshold": "low"
+    },
+    "performance": {
+      "name": "Performance Review",
+      "prompt": "Analyze the following code for performance bottlenecks, inefficient algorithms, memory usage, and optimization opportunities. Suggest performance improvements.",
+      "severityThreshold": "medium"
+    },
+    "maintainability": {
+      "name": "Maintainability Review",
+      "prompt": "Assess the following code for maintainability factors such as modularity, complexity, documentation, and ease of modification. Suggest improvements to make the code easier to maintain.",
+      "severityThreshold": "medium"
+    },
+    "comprehensive": {
+      "name": "Comprehensive Review",
+      "prompt": "Perform a thorough code review covering security vulnerabilities, best practices, performance considerations, maintainability, style consistency, and potential bugs. Provide detailed feedback and actionable recommendations.",
+      "severityThreshold": "high"
+    }
+  }
+}

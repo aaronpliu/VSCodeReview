@@ -14,7 +14,8 @@
   },
   "files": [
     "dist/**/*",
-    "languages.json"
+    "languages.json",
+    "prompt-templates.json"
   ],
   "keywords": [
     "code-review",
