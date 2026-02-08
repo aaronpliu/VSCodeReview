@@ -1,0 +1,107 @@
+import fs from 'fs-extra';
+import path from 'path';
+import { execSync } from 'child_process';
+import { Reviewer } from './reviewer';
+import { ApiClient } from './api-client';
+
+export class HuskyIntegration {
+  constructor(private apiClient: ApiClient) {}
+
+  /**
+   * Runs code review on staged files before committing
+   */
+  async runPreCommitReview(): Promise<boolean> {
+    try {
+      // Get the list of staged files
+      const stagedFiles = this.getStagedFiles();
+      
+      if (stagedFiles.length === 0) {
+        console.log('No staged files to review.');
+        return true;
+      }
+
+      console.log(`Found ${stagedFiles.length} staged files to review.`);
+      
+      const reviewer = new Reviewer(this.apiClient);
+      const results = await reviewer.reviewFiles(stagedFiles);
+      
+      // Print results
+      await reviewer.printReviewResults(results);
+      
+      // Determine if any high/critical severity issues were found
+      const hasCriticalIssues = results.some(result => 
+        result.severity === 'high' || result.severity === 'critical'
+      );
+      
+      if (hasCriticalIssues) {
+        console.log('Critical or high severity issues found. Commit blocked.');
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error during pre-commit review:', error.message);
+      } else {
+        console.error('Unknown error during pre-commit review:', String(error));
+      }
+      return false;
+    }
+  }
+
+  /**
+   * Gets the list of staged files in the git repository
+   */
+  private getStagedFiles(): string[] {
+    try {
+      // Get the list of staged files using git command
+      const stagedOutput = execSync('git diff --cached --name-only --diff-filter=ACMR', { 
+        encoding: 'utf-8' 
+      });
+      
+      if (!stagedOutput.trim()) {
+        return [];
+      }
+      
+      // Split the output into individual file paths
+      const stagedFiles = stagedOutput
+        .trim()
+        .split('\n')
+        .map(file => file.trim())
+        .filter(file => file.length > 0);
+      
+      return stagedFiles;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error getting staged files:', error.message);
+      } else {
+        console.error('Unknown error getting staged files:', String(error));
+      }
+      return [];
+    }
+  }
+
+  /**
+   * Installs the pre-commit hook in the current repository
+   */
+  installPreCommitHook(repoPath: string): void {
+    const huskyDir = path.join(repoPath, '.husky');
+    
+    // Create .husky directory if it doesn't exist
+    if (!fs.existsSync(huskyDir)) {
+      fs.mkdirSync(huskyDir, { recursive: true });
+    }
+    
+    // Create the pre-commit hook script
+    const preCommitScript = `#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx @jc-vendor/code-review pre-commit
+`;
+    
+    const preCommitPath = path.join(huskyDir, 'pre-commit');
+    fs.writeFileSync(preCommitPath, preCommitScript, { mode: 0o755 });
+    
+    console.log('Pre-commit hook installed successfully!');
+  }
+}

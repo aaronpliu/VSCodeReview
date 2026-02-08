@@ -1,0 +1,33 @@
+node_modules/
+dist/
+coverage/
+.nyc_output/
+.env
+*.log
+.DS_Store
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+test/
+temp/
+tmp/
+*.tgz
+.nyc_output/
+coverage/
+# Editor-specific files
+*.swp
+*.swo
+*~
+.idea/
+*.tmux
+.vs/
+# OS-specific files
+Thumbs.db
+ehthumbs.db
+Icon?
+.CFUserIcon*
+.hg
+.svn
+.cache
+npm-shrinkwrap.json
