@@ -12,13 +12,15 @@ First, make sure you have Husky installed in your project:
 npm install --save-dev husky
 ```
 
-### 2. Enable Git Hooks
+### 2. Initialize Husky
 
-Enable Git hooks with Husky:
+Initialize Husky in your project (replaces the deprecated `husky install`):
 
 ```bash
-npx husky install
+npx husky init
 ```
+
+This command creates the `.husky/` directory and adds a sample pre-commit hook. The `npx husky init` command is the modern way to initialize Husky (the `husky install` command was deprecated in newer versions).
 
 ### 3. Install the Pre-commit Hook
 

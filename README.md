@@ -17,6 +17,13 @@ See [documentation](./docs/index.md) for details.
 npm install @jc-vendor/code-review
 ```
 
+## Husky Initialization
+
+To initialize Husky in your project, run:
+```bash
+npx husky-init
+```
+
 ## Usage
 
 ### CLI Commands

@@ -1,5 +1,17 @@
 # Quick Reference Guide
 
+## Getting Started with Husky
+
+1. Install Husky:
+   ```bash
+   npm install --save-dev husky
+   ```
+
+2. Initialize Husky (replaces deprecated 'husky install'):
+   ```bash
+   npx husky init
+   ```
+
 ## CLI Commands
 
 ### Install Husky Hook

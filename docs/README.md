@@ -17,6 +17,18 @@ npm install @jc-vendor/code-review
 
 ## Usage
 
+### Setting Up Husky
+
+First, make sure you have Husky installed and initialized in your project:
+
+```bash
+# Install Husky
+npm install --save-dev husky
+
+# Initialize Husky (replaces deprecated 'husky install')
+npx husky init
+```
+
 ### CLI Commands
 
 #### Install Husky Hook
