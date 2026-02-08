@@ -82,26 +82,55 @@ export class HuskyIntegration {
   }
 
   /**
-   * Installs the pre-commit hook in the current repository
+   * Installs the pre-commit hook in the current repository, appending to existing hooks
    */
   installPreCommitHook(repoPath: string): void {
     const huskyDir = path.join(repoPath, '.husky');
+    const preCommitPath = path.join(huskyDir, 'pre-commit');
     
     // Create .husky directory if it doesn't exist
     if (!fs.existsSync(huskyDir)) {
       fs.mkdirSync(huskyDir, { recursive: true });
     }
     
-    // Create the pre-commit hook script
-    const preCommitScript = `#!/usr/bin/env sh
+    // Read the existing pre-commit hook if it exists
+    let existingHookContent = '';
+    if (fs.existsSync(preCommitPath)) {
+      existingHookContent = fs.readFileSync(preCommitPath, 'utf-8');
+    }
+    
+    // Create the code review command
+    const codeReviewCommand = 'npx @jc-vendor/code-review pre-commit\n';
+    
+    // Check if the command is already in the hook to prevent duplicates
+    if (existingHookContent.includes(codeReviewCommand.trim())) {
+      console.log('Pre-commit hook already contains code review command.');
+      return;
+    }
+    
+    // Combine the existing hook with the new command
+    let newHookContent = '';
+    if (existingHookContent) {
+      // Append the code review command to the existing hook
+      newHookContent = existingHookContent;
+      
+      // Ensure there's a newline at the end if needed
+      if (!existingHookContent.endsWith('\n')) {
+        newHookContent += '\n';
+      }
+      
+      newHookContent += codeReviewCommand;
+    } else {
+      // Create a new hook with the code review command and husky header
+      newHookContent = `#!/usr/bin/env sh
 . "$(dirname "$0")/_/husky.sh"
 
-npx @jc-vendor/code-review pre-commit
-`;
+${codeReviewCommand}`;
+    }
     
-    const preCommitPath = path.join(huskyDir, 'pre-commit');
-    fs.writeFileSync(preCommitPath, preCommitScript, { mode: 0o755 });
+    // Write the combined hook to the file
+    fs.writeFileSync(preCommitPath, newHookContent, { mode: 0o755 });
     
-    console.log('Pre-commit hook installed successfully!');
+    console.log('Pre-commit hook updated successfully with code review command!');
   }
 }

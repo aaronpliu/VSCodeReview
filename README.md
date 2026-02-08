@@ -9,6 +9,7 @@ A comprehensive code review tool that integrates with Git hooks via Husky and le
 - RAG API-powered code review capabilities
 - Pre-commit hook validation
 - Command-line interface for manual reviews
+- Non-destructive hook installation (appends to existing hooks instead of replacing them)
 
 ## Installation
 
@@ -52,6 +53,8 @@ npx husky install
 ```bash
 npx @jc-vendor/code-review --install-hook
 ```
+
+> **Note:** If your project already has a pre-commit hook configured, the `--install-hook` command will append the code review command to the existing hook instead of replacing it. The command checks for duplicates to prevent multiple insertions.
 
 ## Configuration
 

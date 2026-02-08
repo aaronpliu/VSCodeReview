@@ -28,6 +28,8 @@ Install the pre-commit hook for code review:
 npx @jc-vendor/code-review install-hook
 ```
 
+> **Note:** If your project already has a pre-commit hook configured, the `install-hook` command will append the code review command to the existing hook instead of replacing it. The command checks for duplicates to prevent multiple insertions.
+
 Alternatively, you can manually add the hook to your `package.json`:
 
 ```json
@@ -77,6 +79,6 @@ You can customize these by setting environment variables or passing options to t
 If the pre-commit hook doesn't seem to be working:
 
 1. Ensure Husky is properly installed and initialized
-2. Verify that the `.husky/pre-commit` file exists and contains the correct command
+2. Verify that the `.husky/pre-commit` file exists and contains the code review command
 3. Make sure the `@jc-vendor/code-review` package is installed in your project
 4. Check that your RAG API is running and accessible at the configured endpoint
