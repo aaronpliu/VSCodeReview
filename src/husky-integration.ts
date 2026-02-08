@@ -98,15 +98,27 @@ export class HuskyIntegration {
    * Parse the commit message to extract ticketId and additional info
    */
   private parseCommitMessage(message: string): { ticketId?: string; additionalInfo?: string } {
-    // Extract ticket ID using regex patterns
-    const ticketIdMatch = message.match(/([A-Z0-9]+-\d+)/); // Matches PROJ-123 format
-    const hashTicketIdMatch = message.match(/#(\d+)/); // Matches #123 format
+    // Define patterns for different ticket ID formats:
+    // - PRJ1234-0235 (letters followed by digits, dash, more digits)
+    // - GIA-123 (letters, dash, digits)
+    // - SQ1234-0123 (similar to first format)
+    // - Original formats: PROJ-123, #123
+    const patterns = [
+      /([A-Z]{2,}-?\d{3,}-\d{3,})/gi,  // Matches PRJ1234-0235, GIA-123, SQ1234-0123
+      /([A-Z0-9]+-\d+)/gi,              // Matches PROJ-123 format
+      /#(\d+)/gi                        // Matches #123 format
+    ];
     
     let ticketId: string | undefined;
-    if (ticketIdMatch) {
-      ticketId = ticketIdMatch[0];
-    } else if (hashTicketIdMatch) {
-      ticketId = `#${hashTicketIdMatch[1]}`;
+    
+    // Look for matches in priority order
+    for (const pattern of patterns) {
+      const match = message.match(pattern);
+      if (match) {
+        // Take the first match from this pattern
+        ticketId = match[0].trim();
+        break;
+      }
     }
     
     // Use the full message as additional info if it's not just a ticket ID
@@ -114,10 +126,8 @@ export class HuskyIntegration {
     if (message) {
       // Remove the ticket ID from the message to avoid duplication
       let cleanedMessage = message;
-      if (ticketIdMatch) {
-        cleanedMessage = cleanedMessage.replace(ticketIdMatch[0], '').trim();
-      } else if (hashTicketIdMatch) {
-        cleanedMessage = cleanedMessage.replace(`#${hashTicketIdMatch[1]}`, '').trim();
+      if (ticketId) {
+        cleanedMessage = cleanedMessage.replace(ticketId, '').trim();
       }
       
       if (cleanedMessage) {
