@@ -39,7 +39,7 @@ export class ApiClient {
   ) {
     this.client = axios.create({
       baseURL: `${baseUrl}${endpoint}`,
-      timeout: 30000, // 30 seconds timeout
+      timeout: 120000, // 120 seconds timeout
     });
     
     this.loadPromptTemplates();
