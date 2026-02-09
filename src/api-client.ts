@@ -68,7 +68,8 @@ export class ApiClient {
     fileName: string,
     templateName?: string,
     ticketId?: string,
-    additionalInfo?: string
+    additionalInfo?: string,
+    diffContent?: string
   ): Promise<ReviewResponse> {
     try {
       // Select the appropriate template
@@ -81,6 +82,11 @@ export class ApiClient {
 
       // Construct the query based on the selected template
       let query = `${template.prompt}\n\nLanguage: ${language}\nFile: ${fileName}\nCode:\n${content}`;
+      
+      // Add diff content if provided
+      if (diffContent && diffContent.trim()) {
+        query += `\n\nGit Diff:\n${diffContent}`;
+      }
       
       // Add ticket ID if provided
       if (ticketId) {
@@ -100,8 +106,10 @@ export class ApiClient {
             "fileName": fileName,
             "language": language,
             "template": templateKey,
+            "hasDiff": !!diffContent,
             ...(ticketId && { ticketId }),
-            ...(additionalInfo && { additionalInfo })
+            ...(additionalInfo && { additionalInfo }),
+            ...(diffContent && { diffProvided: true })
           }
         }]
       };

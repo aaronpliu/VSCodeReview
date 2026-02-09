@@ -4,6 +4,7 @@ import glob from 'glob';
 import { Minimatch } from 'minimatch';
 import { ApiClient } from './api-client';
 import * as jsYaml from 'js-yaml';
+import { execSync } from 'child_process';
 
 interface LanguageConfig {
   extensions: string[];
@@ -190,6 +191,19 @@ export class Reviewer {
         return null;
       }
 
+      // Get the git diff for this specific file
+      let diffContent = '';
+      try {
+        // Run git diff command to get the diff for this file
+        diffContent = execSync(`git diff --cached ${filePath}`, { 
+          encoding: 'utf-8',
+          maxBuffer: 10 * 1024 * 1024 // 10MB buffer to handle large diffs
+        });
+      } catch (error) {
+        // If there's no diff (maybe it's a new file), we'll just continue with empty diff
+        console.log(`No diff found for file: ${filePath} (likely a new file)`);
+      }
+
       console.log(`Reviewing file: ${filePath} (${language}) with template: ${this.template}`);
 
       const review = await this.apiClient.sendReviewRequest(
@@ -198,7 +212,8 @@ export class Reviewer {
         filePath,
         this.template,
         this.ticketId,
-        this.additionalInfo
+        this.additionalInfo,
+        diffContent
       );
 
       return {

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-02-09
+
+### Added
+- Git diff information included in API requests for more contextual code reviews
+- Enhanced Reviewer and ApiClient to handle diff content alongside full file content
+
+### Changed
+- Modified reviewFile method to capture git diff using `git diff --cached` for each staged file
+- Updated API client to incorporate diff content in the query string with clear labeling
+- Maintained backward compatibility by making diff content optional
+
 ## [1.1.1] - 2026-02-08
 
 ### Added
