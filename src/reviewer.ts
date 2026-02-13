@@ -206,7 +206,8 @@ export class Reviewer {
 
       console.log(`Reviewing file: ${filePath} (${language}) with template: ${this.template}`);
 
-      const review = await this.apiClient.sendReviewRequest(
+      // API response is expected to be an array according to RAG API specification
+      const apiResponse = await this.apiClient.sendReviewRequest(
         content,
         language,
         filePath,
@@ -216,9 +217,21 @@ export class Reviewer {
         diffContent
       );
 
+      // According to RAG API specification, response is always an array
+      // Extract the first element which contains the review for the file
+      let review;
+      if (Array.isArray(apiResponse)) {
+        review = apiResponse[0]; 
+      } else {
+        // Fallback for backward compatibility if API returns a single object
+        review = apiResponse;
+      }
+
       return {
         fileName: filePath,
-        ...review
+        feedback: review?.feedback || 'No feedback provided',
+        suggestions: review?.suggestions || [],
+        severity: review?.severity || 'medium'
       };
     } catch (error) {
       console.error(`Error reviewing file ${filePath}:`, error);

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-02-13
+
+### Fixed
+- Corrected API response handling to properly process array responses from RAG service
+- Implemented proper validation of API response structure according to specification
+- Enhanced response parsing to handle both single-object and array responses
+
+### Changed
+- Updated reviewer.ts to explicitly handle array response format as per RAG API specification
+- Added explicit checking for required response fields (fileName, feedback, suggestions, severity)
+- Improved error handling for malformed API responses
+
 ## [1.1.2] - 2026-02-09
 
 ### Added
